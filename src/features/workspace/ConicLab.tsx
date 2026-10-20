@@ -57,8 +57,8 @@ export default function ConicLab(){
    const horizontal=orientation==='horizontal';const f1={x:h+(horizontal?c:0),y:k+(horizontal?0:c)},f2={x:h-(horizontal?c:0),y:k-(horizontal?0:c)};
    nodes.push(<g key="foci"><circle className="conic-focus" cx={sx(f1.x)} cy={sy(f1.y)} r="6"/><circle className="conic-focus" cx={sx(f2.x)} cy={sy(f2.y)} r="6"/><text className="conic-label" x={sx(f1.x)+9} y={sy(f1.y)-9}>F₁</text><text className="conic-label" x={sx(f2.x)+9} y={sy(f2.y)-9}>F₂</text><circle className="conic-center" cx={sx(h)} cy={sy(k)} r="5"/><text className="conic-label" x={sx(h)+9} y={sy(k)-9}>C</text></g>);
    if(type==='hyperbola'){
-    const m=b/a; if(horizontal){nodes.push(<g key="asym"><line className="conic-asymptote" x1={0} y1={sy(k+m*(W/2/S-h))} x2={W} y2={sy(k+m*(-W/2/S-h))}/><line className="conic-asymptote" x1={0} y1={sy(k-m*(W/2/S-h))} x2={W} y2={sy(k-m*(-W/2/S-h))}/></g>)}
-    else {const inv=a/b;nodes.push(<g key="asym"><line className="conic-asymptote" x1={0} y1={sy(k+inv*(W/2/S-h))} x2={W} y2={sy(k+inv*(-W/2/S-h))}/><line className="conic-asymptote" x1={0} y1={sy(k-inv*(W/2/S-h))} x2={W} y2={sy(k-inv*(-W/2/S-h))}/></g>)}
+    const m=b/a; if(horizontal){nodes.push(<g key="asym"><line className="conic-asymptote" x1={0} y1={sy(k+m*(-W/2/S-h))} x2={W} y2={sy(k+m*(W/2/S-h))}/><line className="conic-asymptote" x1={0} y1={sy(k-m*(-W/2/S-h))} x2={W} y2={sy(k-m*(W/2/S-h))}/></g>)}
+    else {const inv=a/b;nodes.push(<g key="asym"><line className="conic-asymptote" x1={0} y1={sy(k+inv*(-W/2/S-h))} x2={W} y2={sy(k+inv*(W/2/S-h))}/><line className="conic-asymptote" x1={0} y1={sy(k-inv*(-W/2/S-h))} x2={W} y2={sy(k-inv*(W/2/S-h))}/></g>)}
    }
   }
   return nodes;
@@ -70,7 +70,7 @@ export default function ConicLab(){
   <aside className="conic-sidebar">
    <div className="conic-side-title"><span className="eyebrow">SECCIONES CÓNICAS</span><h2>Explorador dinámico</h2><p>Modifica parámetros y observa cómo cambia cada representación.</p></div>
    <div className="conic-tabs" role="tablist" aria-label="Seleccionar cónica">
-    {(['parabola','ellipse','hyperbola'] as const).map(t=><button key={t} className={type===t?'active':''} onClick={()=>setType(t)}>{t==='parabola'?'Parábola':t==='ellipse'?'Elipse':'Hipérbola'}</button>)}
+    {(['parabola','ellipse','hyperbola'] as const).map(t=><button key={t} className={type===t?'active':''} onClick={()=>{setType(t);if(t==='ellipse'&&b>=a)setB(Math.max(.75,a-.5));}}>{t==='parabola'?'Parábola':t==='ellipse'?'Elipse':'Hipérbola'}</button>)}
    </div>
    <div className="conic-section"><span className="eyebrow">ORIENTACIÓN</span><div className="orientation-toggle"><button className={orientation==='horizontal'?'active':''} onClick={()=>setOrientation('horizontal')}>Horizontal</button><button className={orientation==='vertical'?'active':''} onClick={()=>setOrientation('vertical')}>Vertical</button></div></div>
    <div className="conic-section"><span className="eyebrow">CENTRO / VÉRTICE</span><Slider symbol="h" label="Desplazamiento x" value={h} min={-4} max={4} onChange={setH}/><Slider symbol="k" label="Desplazamiento y" value={k} min={-3} max={3} onChange={setK}/></div>

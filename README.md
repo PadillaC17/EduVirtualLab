@@ -1,44 +1,50 @@
-# Eduvirtual LAB · Fase 3
+# EduVirtual Lab · Fases 1–4
 
-Laboratorio virtual educativo sin cuentas, orientado al aprendizaje de las secciones cónicas en Geometría II. Las Fases 1, 2 y 3 están integradas en la aplicación publicada.
+Laboratorio de geometría para Geometría II, Universidad de Guayaquil. Sin cuentas ni autenticación. El código fuente de main genera el sitio de Cloudflare Pages; dist se reconstruye durante la publicación.
 
-## Ejecutar en Windows, macOS o Linux
+## Estado actual
 
-Instala Node.js 22.12 o posterior (recomendado Node 24 LTS). Abre una terminal en esta carpeta:
+- **Fase 1:** plano libre con puntos, coordenadas, zoom, tema e historial.
+- **Fase 2:** explorador de parábola, elipse e hipérbola con parámetros, focos, directriz, asíntotas y ecuaciones.
+- **Fase 3 revisada:** entrada textual y visual MathLive, representación KaTeX, AST tipado, evaluación, parámetros explícitos, puntos 2D/3D, funciones 2D e implícitas. Sin eval() de JavaScript.
+- **Fase 4:** escena Three.js con cámara libre, vistas, zoom, ejes, cuadrícula y malla; prismas rectangulares, pirámides rectas rectangulares, cilindros, conos y esferas; cálculo de áreas/volúmenes; puntos, vectores, rectas y planos editables; superficies explícitas y cortes de un cono doble.
+- **Entrada:** fondo azul oscuro, logotipo y «EduVirtual Lab» durante aproximadamente un segundo después de iniciar React. El tiempo total de descarga depende de la conexión; el motor 3D y MathLive se cargan al usarse.
+
+## Uso
+
+En Geometría 2D elige Cónicas dinámicas o Ecuaciones y gráficas. En el editor, texto y modo visual se convierten al mismo AST validado. Las funciones trigonométricas usan radianes. Los parámetros aparecen con valor inicial explícito 1. Una superficie z=f(x,y) o un punto A=(x,y,z) se abre con «Abrir en Geometría 3D».
+
+Geometría 3D tiene cuatro herramientas: Sólidos, Objetos, Superficies y Cortes del cono. Arrastrar rota la cámara; rueda/pellizco amplía; botón derecho/dos dedos desplaza. Hay botones para vistas frontal xz, superior xy y restablecer. El eje vertical es z.
+
+Los cortes corresponden a x²+y²=z² y al plano z=tan(θ)x+c. Para c≠0: círculo a 0°, elipse por debajo de 45°, parábola a 45° e hipérbola por encima. Para c=0 se muestran casos degenerados. La ventana finita |z|≤6 recorta las ramas, sin afirmar que terminan allí.
+
+## Límites explícitos
+
+- Editor: 512 caracteres, 128 nodos por sentencia y profundidad 32. Funciones: sin, cos, tan, sqrt, abs, exp, ln y log (base 10). No hay integración simbólica general ni CAS universal.
+- Los identificadores largos son nombres de parámetros. Se admite multiplicación implícita como 3x, πr²h y (x+1)(x−1). Las familias soportadas están clasificadas; se rechazan las demás.
+- Las gráficas y superficies son aproximaciones numéricas; omiten valores no reales, singularidades detectadas y puntos fuera de la ventana. No garantizan detectar todas las características de cualquier función arbitraria.
+- Superficies: z=f(x,y), dominio configurable hasta ±6 y ventana vertical ±10. No se representan superficies implícitas 3D generales.
+- Los objetos se editan mediante coordenadas en el panel. Las rectas y planos dibujados son porciones finitas de objetos matemáticamente infinitos; no tienen longitud/área total finita.
+- Las medidas de los sólidos se calculan por fórmulas del dominio, independientemente de la triangulación visual.
+- El trabajo no se guarda al recargar. Persistencia/importación corresponde a Fase 5. Las actividades completas de investigación corresponden a Fase 6.
+
+## Instalación y publicación
+
+Node 24 LTS recomendado (mínimo 22.12):
 
 ```bash
 npm ci
+npm test
+npm run build
 npm run dev
 ```
 
-Abre la dirección que indique Vite, normalmente http://localhost:5173. Para detenerlo usa Ctrl+C. La opción --host permite acceso desde la red local; no equivale a publicación en Internet.
+Cloudflare Pages: rama main, comando `npm run build`, output directory `dist`. El script de build prepara las fuentes locales de MathLive antes de compilar. No se necesitan secretos ni servicios de pago para estas funciones. Las fuentes de MathLive y KaTeX se sirven desde el propio sitio.
 
-```bash
-npm test
-npm run build
-npm run preview
-```
+## Verificación de esta entrega
 
-`preview` sirve el build de producción, normalmente en http://localhost:4173. Si un puerto está ocupado, usa la dirección que indique el comando.
+71 pruebas aprobadas en 6 archivos y build de producción correcto: regresiones 2D, auditoría del parser, adaptador real de MathLive (conversión sin DOM), medidas de sólidos, validación espacial, superficies y ecuaciones de las secciones del cono. Se corrigieron además las asíntotas trasladadas y la selección de semiejes al cambiar a elipse.
 
-## Qué funciona
+No se ejecutó revisión visual/interactiva en navegador en este entorno: el control de navegador requerido no estaba disponible. El montaje real de MathLive, WebGL, gestos y descarga de fuentes requieren la comprobación manual de docs/FASE_4.md. Un fallo de WebGL tiene un estado de error y opción de reintento.
 
-- Plano libre de Fase 1: puntos, edición, zoom, desplazamiento, cuadrícula, ejes y deshacer/rehacer.
-- Explorador dinámico de parábola, elipse e hipérbola de Fase 2, con elementos notables, parámetros y ecuación asociada.
-- Fase 3: editor de expresiones y ecuaciones con analizador seguro, AST tipado y evaluación numérica.
-- Clasificación de funciones 2D, ecuaciones implícitas 2D, superficies explícitas 3D, puntos 2D y fórmulas escalares.
-- Gráficas 2D aproximadas, manejo de discontinuidades, evaluación f(x) y parámetros explícitos para fórmulas.
-- Límites de seguridad: 512 caracteres, 128 nodos, profundidad 32, funciones permitidas y ausencia de `eval()`.
-- Interfaz adaptable, modo claro/oscuro y navegación entre Cónicas dinámicas y Ecuaciones y gráficas.
-
-Sin autenticación ni peticiones a una API propia; no se recopilan datos personales. Las construcciones todavía no se conservan al recargar: el guardado corresponde a Fase 5.
-
-## Pendiente, explícitamente
-
-Motor 3D interactivo, persistencia de proyectos, importación/exportación y actividades de investigación guiadas. La Fase 3 utiliza un analizador propio con lista blanca en lugar de depender de MathLive/Math.js/KaTeX; esas librerías no son necesarias para el alcance funcional actual.
-
-- [Arquitectura, licencias, interpretación y fases](docs/ARQUITECTURA.md)
-- [Resultados y criterios manuales de Fase 1](docs/VALIDACION.md)
-- [Instrucciones de GitHub y Cloudflare Pages](docs/PUBLICACION.md)
-
-El repositorio Git local contiene la entrega. Después de extraer el ZIP puedes usar su historial incluido o iniciar otro repositorio. `node_modules` no se incluye; `npm ci` reconstruye las dependencias. `dist` contiene el build verificado, pero los cambios se hacen en `src` y luego se recompilan.
+Three.js, MathLive y KaTeX tienen licencia MIT en las versiones instaladas; conservar los avisos en THIRD_PARTY_NOTICES.txt, THIRD_PARTY_PHASE4.txt y los de los paquetes. La app no incluye ni redistribuye GeoGebra en esta implementación.
