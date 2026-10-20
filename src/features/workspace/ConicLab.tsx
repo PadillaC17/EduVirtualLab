@@ -1,5 +1,6 @@
-import {useMemo,useState} from 'react';
+import {useEffect,useMemo,useState} from 'react';
 import Icon from '../../components/Icon';
+import {loadConics,saveConics} from '../../storage/projectStorage';
 
 type ConicType='parabola'|'ellipse'|'hyperbola';
 type Orientation='horizontal'|'vertical';
@@ -15,10 +16,12 @@ function Slider({label,value,min,max,step=0.25,onChange,symbol}:{label:string;va
 }
 
 export default function ConicLab(){
- const [type,setType]=useState<ConicType>('parabola');
- const [orientation,setOrientation]=useState<Orientation>('vertical');
- const [h,setH]=useState(0);const [k,setK]=useState(0);const [p,setP]=useState(2);const [a,setA]=useState(4);const [b,setB]=useState(2.5);
- const [showGuides,setShowGuides]=useState(true);const [showDefinition,setShowDefinition]=useState(true);
+ const saved=loadConics();
+ const [type,setType]=useState<ConicType>(saved?.type??'parabola');
+ const [orientation,setOrientation]=useState<Orientation>(saved?.orientation??'vertical');
+ const [h,setH]=useState(saved?.h??0);const [k,setK]=useState(saved?.k??0);const [p,setP]=useState(saved?.p??2);const [a,setA]=useState(saved?.a??4);const [b,setB]=useState(saved?.b??2.5);
+ const [showGuides,setShowGuides]=useState(saved?.showGuides??true);const [showDefinition,setShowDefinition]=useState(saved?.showDefinition??true);
+ useEffect(()=>{saveConics({type,orientation,h,k,p,a,b,showGuides,showDefinition});},[type,orientation,h,k,p,a,b,showGuides,showDefinition]);
  const c=type==='ellipse'?Math.sqrt(Math.max(0,a*a-b*b)):Math.sqrt(a*a+b*b);
  const equation=useMemo(()=>{
   const X=h===0?'x':`(x ${h>0?'−':'+'} ${fmt(Math.abs(h))})`;const Y=k===0?'y':`(y ${k>0?'−':'+'} ${fmt(Math.abs(k))})`;

@@ -1,4 +1,4 @@
-import {useReducer,useState} from 'react';
+import {useEffect,useReducer,useState} from 'react';
 import {INITIAL_POINTS,INITIAL_VIEW,validCoordinate,type Tool} from '../domain/model';
 import {historyReducer} from '../features/workspace/history';
 import {format,zoom} from '../math/coordinates';
@@ -6,17 +6,21 @@ import Plane from '../engines/svg/Plane';
 import Icon from '../components/Icon';
 import PointProperties from '../components/PointProperties';
 import ErrorBoundary from '../components/ErrorBoundary';
+import {loadPlane,savePlane} from '../storage/projectStorage';
 
 export default function App({embedded=false}:{embedded?:boolean}){
+ const saved=loadPlane();
+ const initialPoints=saved?.points??INITIAL_POINTS;
  const [tool,setTool]=useState<Tool>('select');
- const [history,dispatch]=useReducer(historyReducer,{past:[],present:INITIAL_POINTS,future:[]});
- const [selected,setSelected]=useState<string|null>('a');
- const [view,setView]=useState(INITIAL_VIEW);
- const [grid,setGrid]=useState(true);
- const [axes,setAxes]=useState(true);
+ const [history,dispatch]=useReducer(historyReducer,{past:[],present:initialPoints,future:[]});
+ const [selected,setSelected]=useState<string|null>(initialPoints[0]?.id??null);
+ const [view,setView]=useState(saved?.view??INITIAL_VIEW);
+ const [grid,setGrid]=useState(saved?.grid??true);
+ const [axes,setAxes]=useState(saved?.axes??true);
  const [message,setMessage]=useState('Selecciona un punto o arrástralo para cambiar sus coordenadas.');
  const points=history.present;
  const current=points.find(p=>p.id===selected);
+ useEffect(()=>{savePlane({points,view,grid,axes});},[points,view,grid,axes]);
 
  function add(x:number,y:number){
   if(!validCoordinate(x)||!validCoordinate(y)){setMessage('Las coordenadas deben estar entre −10000 y 10000.');return;}
