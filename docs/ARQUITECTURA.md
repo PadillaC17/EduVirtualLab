@@ -77,7 +77,7 @@ eduvirtual-lab/
     features/
       workspace/         historial; acciones y construcciones futuras
       activities/        reservado para Fase 6
-    storage/             reservado para Fase 5
+    storage/             proyecto JSON versionado y persistencia local
   tests/                 cálculos y estado
   public/                favicon local
   docs/                  arquitectura, validación y publicación
@@ -99,7 +99,7 @@ El **primer piloto educativo v1.0**, construido por fases, abarcará construccio
 | 2 | GeoGebra 2D; puntos, rectas, segmentos, rayos, vectores, polígonos, círculos y mediciones | Segmento 3-4-5; áreas conocidas; degenerados; arrastre mantiene dependencias; historial del motor. |
 | 3 | **Implementada:** AST propio seguro, funciones/implícitas, puntos, fórmulas y reconocimiento de superficies 3D | Seis familias de entrada, f(2)=6, parámetros explícitos, errores, rechazo de llamadas arbitrarias y discontinuidades. |
 | 4 | GeoGebra 3D; sólidos, cámara, dimensiones, superficies explícitas | Volúmenes/áreas conocidos, dimensiones inválidas y casos degenerados; disponibilidad WebGL. |
-| 5 | LocalStorage/IndexedDB según tamaño, JSON versionado e imágenes según API | Ida/vuelta; versiones; referencias; tamaños máximos; importaciones maliciosas; cuotas y recuperación. |
+| 5 | **Implementada:** localStorage, JSON versionado, exportación/importación segura y recuperación de estado | Ida/vuelta, versión 1, límite 2 MiB, validación de rangos, listas blancas y rechazo de claves peligrosas. |
 | 6 | Actividades de seis temas | Objetivo, instrucciones, interacción, preguntas y retroalimentación real; revisión docente. |
 | 7 | Optimización, E2E y Cloudflare Pages | Móvil/teclado, fallos de red del motor, auditoría de solicitudes, HTTPS y dominio confirmado. |
 
