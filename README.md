@@ -1,4 +1,4 @@
-# EduVirtual Lab · Fases 1–4
+# EduVirtual Lab · Fases 1–5
 
 Laboratorio de geometría para Geometría II, Universidad de Guayaquil. Sin cuentas ni autenticación. El código fuente de main genera el sitio de Cloudflare Pages; dist se reconstruye durante la publicación.
 
@@ -8,6 +8,7 @@ Laboratorio de geometría para Geometría II, Universidad de Guayaquil. Sin cuen
 - **Fase 2:** explorador de parábola, elipse e hipérbola con parámetros, focos, directriz, asíntotas y ecuaciones.
 - **Fase 3 revisada:** entrada textual y visual MathLive, representación KaTeX, AST tipado, evaluación, parámetros explícitos, puntos 2D/3D, funciones 2D e implícitas. Sin eval() de JavaScript.
 - **Fase 4:** escena Three.js con cámara libre, vistas, zoom, ejes, cuadrícula y malla; prismas rectangulares, pirámides rectas rectangulares, cilindros, conos y esferas; cálculo de áreas/volúmenes; puntos, vectores, rectas y planos editables; superficies explícitas y cortes de un cono doble.
+- **Fase 5:** guardado automático local del Plano libre, Cónicas, Ecuaciones y Geometría 3D; proyecto JSON versionado, exportación, importación validada y recuperación de la navegación.
 - **Entrada:** fondo azul oscuro, logotipo y «EduVirtual Lab» durante aproximadamente un segundo después de iniciar React. El tiempo total de descarga depende de la conexión; el motor 3D y MathLive se cargan al usarse.
 
 ## Uso
@@ -26,7 +27,7 @@ Los cortes corresponden a x²+y²=z² y al plano z=tan(θ)x+c. Para c≠0: círc
 - Superficies: z=f(x,y), dominio configurable hasta ±6 y ventana vertical ±10. No se representan superficies implícitas 3D generales.
 - Los objetos se editan mediante coordenadas en el panel. Las rectas y planos dibujados son porciones finitas de objetos matemáticamente infinitos; no tienen longitud/área total finita.
 - Las medidas de los sólidos se calculan por fórmulas del dominio, independientemente de la triangulación visual.
-- El trabajo no se guarda al recargar. Persistencia/importación corresponde a Fase 5. Las actividades completas de investigación corresponden a Fase 6.
+- El trabajo compatible se guarda automáticamente en localStorage. El archivo de proyecto usa JSON versionado y la importación está limitada a 2 MiB. El guardado local no sustituye una copia de seguridad exportada.
 
 ## Instalación y publicación
 
