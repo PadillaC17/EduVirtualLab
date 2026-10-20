@@ -1,6 +1,7 @@
 import {useMemo,useState} from 'react';
 import Icon from '../../components/Icon';
 import {researchActivities,type ResearchActivityId} from '../../data/researchActivities';
+import {submitResearchResponse} from '../../services/supabaseAdmin';
 
 type Step=1|2|3;
 type SavedResponse={schemaVersion:1;activityId:ResearchActivityId;prediction:string;observation:string;reflection:string;completedAt:string};
@@ -48,14 +49,18 @@ export default function ResearchLab(){
  const [activityId,setActivityId]=useState<ResearchActivityId>('parabola');const [step,setStep]=useState<Step>(1);
  const [prediction,setPrediction]=useState('');const [observation,setObservation]=useState('');const [reflection,setReflection]=useState('');
  const [contrast,setContrast]=useState(false);const [far,setFar]=useState(false);const [saved,setSaved]=useState<SavedResponse[]>(safeLoad);const [status,setStatus]=useState('');
+ const [participantCode,setParticipantCode]=useState(()=>{try{return localStorage.getItem('eduvirtual_participant_code')??'';}catch{return'';}});const [participantPin,setParticipantPin]=useState(()=>{try{return localStorage.getItem('eduvirtual_participant_pin')??'';}catch{return'';}});
  const activity=researchActivities.find(a=>a.id===activityId)!;
 
  function choose(id:ResearchActivityId){setActivityId(id);setStep(1);setPrediction('');setObservation('');setReflection('');setContrast(false);setFar(false);setStatus('');}
- function save(){
+ async function save(){
   if(!prediction.trim()||!observation.trim()||!reflection.trim())return;
   const record:SavedResponse={schemaVersion:1,activityId,prediction:prediction.trim(),observation:observation.trim(),reflection:reflection.trim(),completedAt:new Date().toISOString()};
   const next=[...saved.filter(r=>r.activityId!==activityId),record];
-  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(next));setSaved(next);setStatus('Evidencia guardada en este navegador.');}catch{setStatus('No se pudo guardar localmente. Tu texto sigue visible en pantalla.');}
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(next));setSaved(next);}catch{}
+  if(!participantCode.trim()||!participantPin.trim()){setStatus('Evidencia guardada solo en este navegador. Ingresa tu código y PIN para enviarla al docente.');return;}
+  setStatus('Enviando evidencia…');
+  try{localStorage.setItem('eduvirtual_participant_code',participantCode.trim().toUpperCase());localStorage.setItem('eduvirtual_participant_pin',participantPin.trim());await submitResearchResponse({code:participantCode.trim().toUpperCase(),pin:participantPin.trim(),activity:activityId,prediction:record.prediction,observation:record.observation,reflection:record.reflection});setStatus('Evidencia guardada y enviada al docente correctamente.');}catch(e){setStatus(e instanceof Error?`Guardado localmente, pero no se pudo enviar: ${e.message}`:'Guardado localmente, pero no se pudo enviar.');}
  }
  function exportJson(){download('eduvirtual-evidencias.json',JSON.stringify({schemaVersion:1,exportedAt:new Date().toISOString(),responses:saved},null,2),'application/json');}
  function exportCsv(){
@@ -66,7 +71,7 @@ export default function ResearchLab(){
   <aside className="research-nav">
    <span className="eyebrow">ACTIVIDADES DE INVESTIGACIÓN</span><h2>Predice, explora y reconstruye</h2><p>Secuencia alineada con las dimensiones de análisis del Capítulo I.</p>
    <div className="research-activity-list">{researchActivities.map(a=><button key={a.id} className={a.id===activityId?'active':''} onClick={()=>choose(a.id)}><span>{a.title}</span><small>{a.subtitle}</small></button>)}</div>
-   <div className="research-progress-summary"><span className="eyebrow">EVIDENCIAS LOCALES</span><strong>{saved.length}/3</strong><p>Actividades guardadas en este navegador.</p>{saved.length>0&&<div className="research-export"><button onClick={exportJson}>Exportar JSON</button><button onClick={exportCsv}>Exportar CSV</button></div>}</div>
+   <div className="research-participant"><span className="eyebrow">PARTICIPANTE</span><label>Código<input placeholder="EST-001" value={participantCode} onChange={e=>setParticipantCode(e.target.value.toUpperCase())}/></label><label>PIN<input type="password" inputMode="numeric" placeholder="••••" value={participantPin} onChange={e=>setParticipantPin(e.target.value)}/></label><small>Tu código identifica tus respuestas sin pedir nombre ni correo.</small></div><div className="research-progress-summary"><span className="eyebrow">EVIDENCIAS LOCALES</span><strong>{saved.length}/3</strong><p>Actividades guardadas en este navegador.</p>{saved.length>0&&<div className="research-export"><button onClick={exportJson}>Exportar JSON</button><button onClick={exportCsv}>Exportar CSV</button></div>}</div>
   </aside>
 
   <section className="research-stage">
