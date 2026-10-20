@@ -1,6 +1,6 @@
-# Eduvirtual LAB · v0.1.0
+# Eduvirtual LAB · Fase 3
 
-Primera entrega de un laboratorio virtual educativo sin cuentas. Implementa la Fase 1, no toda la hoja de ruta. Código completo, configuración, lockfile y pruebas incluidos.
+Laboratorio virtual educativo sin cuentas, orientado al aprendizaje de las secciones cónicas en Geometría II. Las Fases 1, 2 y 3 están integradas en la aplicación publicada.
 
 ## Ejecutar en Windows, macOS o Linux
 
@@ -23,18 +23,19 @@ npm run preview
 
 ## Qué funciona
 
-- Interfaz adaptable, panel de objetos y propiedades; modos claro/oscuro.
-- Plano SVG cartesiano con 3 puntos iniciales.
-- Seleccionar, arrastrar, crear y eliminar puntos; editar coordenadas por teclado.
-- Zoom, desplazar vista, cuadrícula/ejes y restablecer vista.
-- Deshacer/rehacer cambios de puntos, incluido vaciar el plano.
-- Guía y navegación a páginas que identifican los módulos pendientes.
+- Plano libre de Fase 1: puntos, edición, zoom, desplazamiento, cuadrícula, ejes y deshacer/rehacer.
+- Explorador dinámico de parábola, elipse e hipérbola de Fase 2, con elementos notables, parámetros y ecuación asociada.
+- Fase 3: editor de expresiones y ecuaciones con analizador seguro, AST tipado y evaluación numérica.
+- Clasificación de funciones 2D, ecuaciones implícitas 2D, superficies explícitas 3D, puntos 2D y fórmulas escalares.
+- Gráficas 2D aproximadas, manejo de discontinuidades, evaluación f(x) y parámetros explícitos para fórmulas.
+- Límites de seguridad: 512 caracteres, 128 nodos, profundidad 32, funciones permitidas y ausencia de `eval()`.
+- Interfaz adaptable, modo claro/oscuro y navegación entre Cónicas dinámicas y Ecuaciones y gráficas.
 
-Sin autenticación ni peticiones a una API; no se recopilan datos personales. Las construcciones **no se conservan al recargar**: el guardado corresponde a Fase 5. El tema sí se conserva cuando el navegador permite localStorage.
+Sin autenticación ni peticiones a una API propia; no se recopilan datos personales. Las construcciones todavía no se conservan al recargar: el guardado corresponde a Fase 5.
 
 ## Pendiente, explícitamente
 
-GeoGebra, rectas/segmentos/rayos/vectores, polígonos, mediciones, gráficas, MathLive, cálculo de expresiones, 3D, importación/exportación y actividades. No se presentan como funciones terminadas. No existe todavía despliegue en lab.eduvirtual.win ni remoto de GitHub.
+Motor 3D interactivo, persistencia de proyectos, importación/exportación y actividades de investigación guiadas. La Fase 3 utiliza un analizador propio con lista blanca en lugar de depender de MathLive/Math.js/KaTeX; esas librerías no son necesarias para el alcance funcional actual.
 
 - [Arquitectura, licencias, interpretación y fases](docs/ARQUITECTURA.md)
 - [Resultados y criterios manuales de Fase 1](docs/VALIDACION.md)
