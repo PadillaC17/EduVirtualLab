@@ -1,8 +1,9 @@
-import {useMemo,useState} from 'react';
+import {useEffect,useMemo,useState} from 'react';
 import Formula from '../../components/Formula';
 import MathEditor from '../../components/MathEditor';
 import {classificationName,evaluate,parseStatement,sampleFunction,sampleImplicit,statementSymbols,type ParsedStatement} from '../../math/expression';
 import {statementToLatex} from '../../math/format';
+import {loadExpression,saveExpression} from '../../storage/projectStorage';
 
 const W=900,H=540,XMIN=-10,XMAX=10,YMIN=-7,YMAX=7;
 const sx=(x:number)=>(x-XMIN)/(XMAX-XMIN)*W,sy=(y:number)=>(YMAX-y)/(YMAX-YMIN)*H;
@@ -19,8 +20,10 @@ function Graph({statement,scope}:{statement:ParsedStatement;scope:Record<string,
  return <svg className="expr-graph" viewBox={`0 0 ${W} ${H}`} role="img" aria-label="Gráfica matemática aproximada">{grid}{content.kind==='lines'&&content.data.map((line,i)=><polyline key={i} className="expr-curve" points={line.map(p=>`${sx(p.x)},${sy(p.y)}`).join(' ')}/>)}{content.kind==='point'&&<g><circle className="expr-point-halo" cx={sx(content.data.x)} cy={sy(content.data.y)} r="14"/><circle className="expr-point" cx={sx(content.data.x)} cy={sy(content.data.y)} r="6"/></g>}</svg>;
 }
 export default function ExpressionLab({onOpen3D}:{onOpen3D:(source:string,scope?:Record<string,number>)=>void}){
- const [input,setInput]=useState('f(x)=x²+3x-4');const [submitted,setSubmitted]=useState(input);const [mode,setMode]=useState<'text'|'visual'>('text');const [revision,setRevision]=useState(0);
- const [xValue,setXValue]=useState('2');const [params,setParams]=useState<Record<string,string>>({r:'3',h:'5'});
+ const saved=loadExpression();
+ const [input,setInput]=useState(saved?.input??'f(x)=x²+3x-4');const [submitted,setSubmitted]=useState(saved?.submitted??saved?.input??'f(x)=x²+3x-4');const [mode,setMode]=useState<'text'|'visual'>(saved?.mode??'text');const [revision,setRevision]=useState(0);
+ const [xValue,setXValue]=useState(saved?.xValue??'2');const [params,setParams]=useState<Record<string,string>>(saved?.params??{r:'3',h:'5'});
+ useEffect(()=>{saveExpression({input,submitted,mode,xValue,params});},[input,submitted,mode,xValue,params]);
  const result=useMemo(()=>{try{return{statement:parseStatement(submitted),error:''};}catch(e){return{statement:null,error:e instanceof Error?e.message:'No se pudo interpretar la expresión.'};}},[submitted]);
  const statement=result.statement;
  const symbols=useMemo(()=>statement?statementSymbols(statement):[],[statement]);
