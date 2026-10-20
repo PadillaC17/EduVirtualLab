@@ -35,19 +35,20 @@ GeoGebra permite el uso académico no comercial, pero una web gratuita también 
 
 Cloudflare Pages y GitHub son servicios con condiciones y cuotas independientes, no dependencias MIT. Esta aplicación estática no necesita plan de pago por diseño, pero tampoco promete gratuidad o cuotas ilimitadas de proveedores. GeoGebra remoto requiere conexión y genera solicitudes a un tercero; antes de Fase 7 verificar privacidad, cookies, solicitudes y atribución. La Fase 1 no carga fuentes, motores ni analítica remotos.
 
-## Interpretación matemática prevista — Fase 3
+## Interpretación matemática implementada — Fase 3
 
 LaTeX, texto humano y expresión interna son formatos distintos. No convertir LaTeX con reemplazos de texto generales ni enviar libremente la entrada a comandos del motor.
 
-**Flujo**: entrada visual/textual → analizador → AST validado → clasificación y resolución de símbolos → documento matemático interno → evaluación o adaptador gráfico → resultado y representación KaTeX.
+**Flujo implementado**: entrada textual → normalización limitada → analizador propio → AST validado → clasificación → evaluación numérica o muestreo gráfico → resultado. La implementación actual no usa `eval()` ni ejecuta texto del usuario como JavaScript.
 
-- Entrada textual: normalizador pequeño para π → pi y superíndices admitidos; gramática explícita para asignaciones, ecuaciones y puntos. El lado de cada expresión se analiza con Math.js. En español se documentará punto decimal; las comas separan coordenadas, no se adivinará su significado.
-- Entrada visual: MathLive entrega MathJSON; adaptador recursivo con lista de nodos admitidos a nuestro árbol interno. El Compute Engine es una dependencia separada y no se presupone instalado. Añadirlo solo si el método elegido lo requiere, con nueva revisión de licencia y pruebas.
-- Canonical: objetos como Function2D, Implicit2D, Surface3D, Point2D y ScalarFormula, con árboles tipados, parámetros, fuente opcional y estado de error. No guardar funciones ejecutables, HTML o JavaScript.
-- Math.js: instancia restringida, sin import, evaluate, parse, createUnit u otras funciones de metaprogramación accesibles desde la entrada. Permitir solo números reales finitos, símbolos aprobados, operaciones + − × ÷ ^ y funciones expresamente soportadas. Rechazar acceso a propiedades, bloques, matrices no admitidas, asignaciones dentro de subexpresiones y llamadas arbitrarias. Límites iniciales: 512 caracteres, 128 nodos y 32 niveles; cálculos acotados en Worker con timeout y terminación. Valores concretos se ajustarán según pruebas.
-- Símbolos: x, y, z y parámetros declarados en un entorno sin prototipo o Map. Un símbolo desconocido se informa; no se le asigna cero. Dependencias entre fórmulas se ordenan y se rechazan ciclos.
-- Adaptador GeoGebra: generar comandos desde AST permitido y nombres internos saneados. Comprobar retorno, existencia del objeto y readiness; registrar eventos para sincronizar cambios. No enviar texto de importaciones directamente a evalCommand. El nombre de esa API no implica uso de eval JavaScript.
-- Adaptador Three.js: muestras numéricas de superficies con límites de resolución; omitir valores inválidos y mostrar aproximación. Las discontinuidades no se unirán artificialmente. Una malla no es una solución algebraica exacta.
+- Entrada textual: normaliza π, superíndices ²/³ y signos tipográficos; admite números reales, identificadores, paréntesis y operadores + − × ÷ ^.
+- AST propio: nodos Number, Symbol, Unary, Binary y Call. Límites: 512 caracteres, 128 nodos y profundidad 32.
+- Lista blanca de funciones: sin, cos, tan, sqrt, abs, exp, ln y log. Constantes: pi y e.
+- Clasificación: Function2D, Implicit2D, Surface3D, Point2D y ScalarFormula.
+- Evaluación: símbolos desconocidos producen error; no se asigna cero de forma tácita. Los errores de sintaxis, símbolo, dominio, límite y capacidad no soportada se distinguen.
+- Gráficas 2D: funciones muestreadas con separación de discontinuidades y ecuaciones implícitas aproximadas mediante contornos numéricos. La aproximación gráfica no se presenta como solución algebraica exacta.
+- Superficies z=f(x,y): se reconocen y validan en Fase 3; su renderizado se reserva para Fase 4.
+- Decisión de dependencias: MathLive, Math.js y KaTeX permanecen fuera del bundle porque el alcance actual se cubre con el analizador propio y así se reduce superficie de ataque y peso. Podrán reevaluarse si una necesidad pedagógica futura lo justifica.
 
 | Entrada | Clasificación | Cálculo y representación previstos |
 | --- | --- | --- |
@@ -96,7 +97,7 @@ El **primer piloto educativo v1.0**, construido por fases, abarcará construccio
 | --- | --- | --- |
 | 1 | Base funcional — esta entrega | Build, pruebas de coordenadas/historial y lista manual de controles. |
 | 2 | GeoGebra 2D; puntos, rectas, segmentos, rayos, vectores, polígonos, círculos y mediciones | Segmento 3-4-5; áreas conocidas; degenerados; arrastre mantiene dependencias; historial del motor. |
-| 3 | MathLive, AST, Math.js, KaTeX, funciones/implícitas | Tabla de seis entradas, round-trip de formatos, errores y rechazo de entrada arbitraria; discontinuidades. |
+| 3 | **Implementada:** AST propio seguro, funciones/implícitas, puntos, fórmulas y reconocimiento de superficies 3D | Seis familias de entrada, f(2)=6, parámetros explícitos, errores, rechazo de llamadas arbitrarias y discontinuidades. |
 | 4 | GeoGebra 3D; sólidos, cámara, dimensiones, superficies explícitas | Volúmenes/áreas conocidos, dimensiones inválidas y casos degenerados; disponibilidad WebGL. |
 | 5 | LocalStorage/IndexedDB según tamaño, JSON versionado e imágenes según API | Ida/vuelta; versiones; referencias; tamaños máximos; importaciones maliciosas; cuotas y recuperación. |
 | 6 | Actividades de seis temas | Objetivo, instrucciones, interacción, preguntas y retroalimentación real; revisión docente. |
