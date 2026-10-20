@@ -1,0 +1,4 @@
+# Adaptador previsto — Fase 2
+No se carga GeoGebra en Fase 1. El contrato de capacidades está en ../contracts.ts.
+El adaptador debe cargar deployggb.js con timeout, esperar appletOnLoad y liberar recursos al desmontarse. Registrar add/update/remove listeners; comandos generados únicamente desde objetos validados. No reenviar texto libre a evalCommand. Modo 2D y 3D en instancias independientes; cola de comandos hasta readiness. La API puede usar evalCommand, que no es eval() JavaScript, pero requiere validación propia.
+Guardar el modelo semántico canónico; .ggb opcional como instantánea del motor, no fuente única. El futuro importador no debe permitir JavaScript, macros o comandos arbitrarios. Incluir atribución Made with GeoGebra® al integrar y revisar las condiciones oficiales entonces. No se promete funcionamiento offline con el servicio remoto.
