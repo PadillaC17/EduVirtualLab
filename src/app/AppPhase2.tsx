@@ -1,28 +1,34 @@
 import {lazy,Suspense,useEffect,useState} from 'react';
 import BrandLogo from '../components/BrandLogo';
+import ProjectPanel from '../components/ProjectPanel';
 const SpatialLab=lazy(()=>import('../features/spatial/SpatialLab'));
 import App from './App';
 import ConicLab from '../features/workspace/ConicLab';
 import ExpressionLab from '../features/workspace/ExpressionLab';
 import ResearchLab from '../features/activities/ResearchLab';
 import Icon from '../components/Icon';
+import {loadUi,saveUi} from '../storage/projectStorage';
 import './styles.css';
 import './fase2.css';
 import './fase3.css';
 import './fase4.css';
 import './research.css';
+import './fase5.css';
 
 function initialDark(){try{const stored=localStorage.getItem('eduvirtual-theme');return stored?stored==='dark':matchMedia('(prefers-color-scheme: dark)').matches;}catch{return false;}}
 
 type Module='plane'|'2d'|'3d'|'activities';
 
 export default function AppPhase2(){
+ const savedUi=loadUi();
  const [spatialDraft,setSpatialDraft]=useState<{source:string;scope:Record<string,number>}>({source:'',scope:{}});
  const [dark,setDark]=useState(initialDark);
- const [module,setModule]=useState<Module>('2d');
- const [workspace,setWorkspace]=useState<'conics'|'equations'>('equations');
+ const [module,setModule]=useState<Module>(savedUi?.module??'2d');
+ const [workspace,setWorkspace]=useState<'conics'|'equations'>(savedUi?.workspace??'equations');
+ const [projectOpen,setProjectOpen]=useState(false);
 
  useEffect(()=>{document.documentElement.dataset.theme=dark?'dark':'light';try{localStorage.setItem('eduvirtual-theme',dark?'dark':'light');}catch{}},[dark]);
+ useEffect(()=>{saveUi({module,workspace});},[module,workspace]);
 
  const open2d=(view:'conics'|'equations')=>{setWorkspace(view);setModule('2d');};
 
@@ -39,6 +45,7 @@ export default function AppPhase2(){
     <button className={module==='activities'?'active':''} onClick={()=>setModule('activities')}><Icon name="book" size={17}/>Investigación</button>
    </nav>
    <div className="top-actions">
+    <button className="project-button" onClick={()=>setProjectOpen(true)}><Icon name="book" size={16}/><span>Proyecto</span><small>Fase 5</small></button>
     <button className="icon-button" onClick={()=>setDark(!dark)} aria-label={dark?'Activar modo claro':'Activar modo oscuro'} title="Cambiar tema"><Icon name={dark?'sun':'moon'}/></button>
    </div>
   </header>
@@ -60,6 +67,7 @@ export default function AppPhase2(){
     <ResearchLab/>
    </>}
 
-  <footer><span>EduVirtual Lab <span className="footer-dot">·</span> Geometría II</span><span>Plano libre · 2D · 3D · Investigación</span></footer>
+  <footer><span>EduVirtual Lab <span className="footer-dot">·</span> Geometría II</span><span>Guardado local automático · Proyecto JSON exportable</span></footer>
+  <ProjectPanel open={projectOpen} onClose={()=>setProjectOpen(false)}/>
  </div>;
 }
