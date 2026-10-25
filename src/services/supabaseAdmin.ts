@@ -1,5 +1,7 @@
-const SUPABASE_URL='https://cfyslekokymawsdlrqev.supabase.co';
-const SUPABASE_KEY='sb_publishable_Lw9Kw3-SjQzv-FVujoeyrA_tCxb5oOR';
+// El entorno de prueba DEBE usar un proyecto Supabase distinto al de producción.
+const SUPABASE_URL=import.meta.env.VITE_SUPABASE_URL as string|undefined;
+const SUPABASE_KEY=import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string|undefined;
+if(!SUPABASE_URL||!SUPABASE_KEY)console.warn('EduVirtual TEST: Supabase de pruebas no configurado. El acceso remoto no funcionará.');
 const SESSION_KEY='eduvirtual_admin_session_v1';
 
 export type AdminSession={access_token:string;refresh_token:string;expires_at:number;user:{id:string;email?:string}};
@@ -7,7 +9,7 @@ export type ParticipantSummary={id:string;code:string;course:string;cohort:strin
 export type ResearchRow={id:string;participant_id:string;activity_id:'parabola'|'elipse'|'hiperbola';prediction:string;observation:string;reflection:string;submitted_at:string};
 export type QuizAttempt={id:string;participant_id:string;quiz_key:string;mode:'practice'|'evaluation'|'pretest'|'posttest';score:number;correct_count:number;total_questions:number;started_at:string|null;submitted_at:string};
 
-function headers(token?:string){return{'apikey':SUPABASE_KEY,'Content-Type':'application/json',...(token?{'Authorization':`Bearer ${token}`}:{})};}
+function headers(token?:string){if(!SUPABASE_URL||!SUPABASE_KEY)throw new Error('Configura las variables de Supabase TEST antes de usar cuentas.');return{'apikey':SUPABASE_KEY,'Content-Type':'application/json',...(token?{'Authorization':`Bearer ${token}`}:{})};}
 async function parse(res:Response){const text=await res.text();let data:any=null;try{data=text?JSON.parse(text):null;}catch{data=text}if(!res.ok)throw new Error(data?.msg||data?.message||data?.error_description||data?.error||`Error ${res.status}`);return data;}
 
 export function loadAdminSession():AdminSession|null{
