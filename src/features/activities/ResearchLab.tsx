@@ -49,7 +49,7 @@ export default function ResearchLab(){
  const [activityId,setActivityId]=useState<ResearchActivityId>('parabola');const [step,setStep]=useState<Step>(1);
  const [prediction,setPrediction]=useState('');const [observation,setObservation]=useState('');const [reflection,setReflection]=useState('');
  const [contrast,setContrast]=useState(false);const [far,setFar]=useState(false);const [saved,setSaved]=useState<SavedResponse[]>(safeLoad);const [status,setStatus]=useState('');
- const [participantCode,setParticipantCode]=useState(()=>{try{return localStorage.getItem('eduvirtual_participant_code')??'';}catch{return'';}});const [participantPin,setParticipantPin]=useState(()=>{try{return localStorage.getItem('eduvirtual_participant_pin')??'';}catch{return'';}});
+ const [participantCode,setParticipantCode]=useState(()=>{try{return localStorage.getItem('eduvirtual_participant_code')??'';}catch{return'';}});const [participantPin,setParticipantPin]=useState('');
  const activity=researchActivities.find(a=>a.id===activityId)!;
 
  function choose(id:ResearchActivityId){setActivityId(id);setStep(1);setPrediction('');setObservation('');setReflection('');setContrast(false);setFar(false);setStatus('');}
@@ -60,7 +60,7 @@ export default function ResearchLab(){
   try{localStorage.setItem(STORAGE_KEY,JSON.stringify(next));setSaved(next);}catch{}
   if(!participantCode.trim()||!participantPin.trim()){setStatus('Evidencia guardada solo en este navegador. Ingresa tu código y PIN para enviarla al docente.');return;}
   setStatus('Enviando evidencia…');
-  try{localStorage.setItem('eduvirtual_participant_code',participantCode.trim().toUpperCase());localStorage.setItem('eduvirtual_participant_pin',participantPin.trim());await submitResearchResponse({code:participantCode.trim().toUpperCase(),pin:participantPin.trim(),activity:activityId,prediction:record.prediction,observation:record.observation,reflection:record.reflection});setStatus('Evidencia guardada y enviada al docente correctamente.');}catch(e){setStatus(e instanceof Error?`Guardado localmente, pero no se pudo enviar: ${e.message}`:'Guardado localmente, pero no se pudo enviar.');}
+  try{localStorage.setItem('eduvirtual_participant_code',participantCode.trim().toUpperCase());await submitResearchResponse({code:participantCode.trim().toUpperCase(),pin:participantPin.trim(),activity:activityId,prediction:record.prediction,observation:record.observation,reflection:record.reflection});setStatus('Evidencia guardada y enviada al docente correctamente.');}catch(e){setStatus(e instanceof Error?`Guardado localmente, pero no se pudo enviar: ${e.message}`:'Guardado localmente, pero no se pudo enviar.');}
  }
  function exportJson(){download('eduvirtual-evidencias.json',JSON.stringify({schemaVersion:1,exportedAt:new Date().toISOString(),responses:saved},null,2),'application/json');}
  function exportCsv(){
@@ -86,7 +86,7 @@ export default function ResearchLab(){
    {step===2&&<><span className="eyebrow">2 · DESNATURALIZACIÓN</span><h2>Contrasta tu supuesto</h2><p>{activity.desnaturalizacion.instruction}</p><div className="research-prompt">{activity.desnaturalizacion.prompt}</div><blockquote>Tu predicción: {prediction}</blockquote><label>Después de explorar, registra lo que observaste.</label><textarea maxLength={3000} value={observation} onChange={e=>setObservation(e.target.value)} placeholder={activity.desnaturalizacion.observationPlaceholder}/><button className="primary research-next" disabled={!observation.trim()} onClick={()=>setStep(3)}>Continuar a reconstrucción</button></>}
    {step===3&&<><span className="eyebrow">3 · RECONSTRUCCIÓN REFLEXIVA</span><h2>Reformula tu explicación</h2><p>{activity.reconstruccion.question}</p><textarea maxLength={4000} value={reflection} onChange={e=>setReflection(e.target.value)} placeholder={activity.reconstruccion.placeholder}/><button className="primary research-next" disabled={!reflection.trim()} onClick={save}>Guardar evidencia</button><button className="research-back" onClick={()=>setStep(2)}>← Volver a explorar</button></>}
    {status&&<p className="research-status" role="status">{status}</p>}
-   <div className="research-privacy"><Icon name="help" size={16}/><p><strong>Sin nombres ni cuentas.</strong> Las respuestas quedan localmente hasta que el usuario decida exportarlas. No se envían automáticamente a un servidor.</p></div>
+   <div className="research-privacy"><Icon name="help" size={16}/><p><strong>Sin nombres ni cuentas.</strong> Las respuestas se guardan en este navegador. Al pulsar Guardar evidencia, se envían también a Supabase si has introducido código y PIN. El PIN no se almacena en este navegador.</p></div>
   </aside>
  </div>;
 }
